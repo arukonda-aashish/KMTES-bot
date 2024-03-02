@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Interface</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="login">
+            <h1>Login</h1>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" />
+            <button onclick="login()">Login</button>
+        </div>
+        <div class="chat">
+            <h1>Welcome to the University Chatbot</h1>
+            <div class="chat-container" id="chat-container"></div>
+            <div class="chat-input">
+                <input type="text" id="userQuery" name="userQuery" placeholder="Type your message..." />
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            var username = document.getElementById("username").value;
+            document.getElementById("chat-container").innerHTML = "<p>Welcome, " + username + "!</p>";
+        }
+
+        function sendMessage() {
+            var userQuery = document.getElementById("userQuery").value;
+            document.getElementById("chat-container").innerHTML += "<p>You: " + userQuery + "</p>";
+
+            // Send user query to server
+            fetch('/get_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'user_query=' + encodeURIComponent(userQuery),
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Update UI with bot response
+                document.getElementById("chat-container").innerHTML += "<p>Bot: " + data + "</p>";
+            });
+        }
+    </script>
+</body>
+</html>
